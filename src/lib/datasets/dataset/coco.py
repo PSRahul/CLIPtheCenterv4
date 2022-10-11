@@ -10,7 +10,7 @@ import os
 
 import torch.utils.data as data
 
-class COCO(data.Dataset):
+class COCO_old(data.Dataset):
   num_classes = 80
   default_resolution = [512, 512]
   mean = np.array([0.40789654, 0.44719302, 0.47026115],
@@ -130,7 +130,6 @@ class COCO(data.Dataset):
 
 
 class COCO(data.Dataset):
-  num_classes = 3
   default_resolution = [512, 512]
   mean = np.array([0.40789654, 0.44719302, 0.47026115],
                   dtype=np.float32).reshape(1, 1, 3)
@@ -139,29 +138,10 @@ class COCO(data.Dataset):
 
   def __init__(self, opt, split):
     super(COCO, self).__init__()
-    self.data_dir = os.path.join(opt.data_dir, 'coco')
-    self.img_dir = os.path.join(self.data_dir, '{}2017'.format(split))
-    if split == 'test':
-      self.annot_path = os.path.join(
-        self.data_dir, 'annotations',
-        'image_info_test-dev2017.json').format(split)
-    else:
-      if opt.task == 'exdet':
-        self.annot_path = os.path.join(
-          self.data_dir, 'annotations',
-          'instances_extreme_{}2017.json').format(split)
-      else:
-        self.annot_path = os.path.join(
-          self.data_dir, 'annotations',
-          'instances_{}2017.json').format(split)
+    self.data_dir = opt.data_root_dir
+    self.img_dir = os.path.join(self.data_dir, split,"coco/data",)
+    self.annot_path = os.path.join(self.data_dir, split,"coco/labels.json")
     self.max_objs = 128
-    self.class_name = [
-      '__background__', 'aeroplane', 'dog', 'sheep']
-    self._valid_ids = [
-      0,1, 2,]
-    self.cat_ids = {v: i for i, v in enumerate(self._valid_ids)}
-    self.voc_color = [(v // 32 * 64 + 64, (v // 8) % 4 * 64, v % 8 * 32) \
-                      for v in range(1, self.num_classes + 1)]
     self._data_rng = np.random.RandomState(123)
     self._eig_val = np.array([0.2141788, 0.01817699, 0.00341571],
                              dtype=np.float32)
@@ -180,8 +160,22 @@ class COCO(data.Dataset):
     self.coco = coco.COCO(self.annot_path)
     self.images = self.coco.getImgIds()
     self.num_samples = len(self.images)
+    self.num_classes = len(self.coco.cats)
 
     print('Loaded {} {} samples'.format(split, self.num_samples))
+
+    self.class_name = [
+      '__background__']
+    self._valid_ids = [
+      ]
+    for index in range(len(self.coco.cats)):
+        cat = self.coco.cats[index]
+        self.class_name.append(cat["name"])
+        self._valid_ids.append(cat["id"])
+
+    self.cat_ids = {v: i for i, v in enumerate(self._valid_ids)}
+    self.voc_color = [(v // 32 * 64 + 64, (v // 8) % 4 * 64, v % 8 * 32) \
+                      for v in range(1, self.num_classes + 1)]
 
   def _to_float(self, x):
     return float("{:.2f}".format(x))
