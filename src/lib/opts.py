@@ -224,6 +224,8 @@ class opts(object):
     self.parser.add_argument('--eval_oracle_dep', action='store_true', 
                              help='use ground truth depth.')
 
+    self.parser.add_argument('--data_root_dir', type=str,
+                             help='root dir for dataset')
   def parse(self, args=''):
     if args == '':
       opt = self.parser.parse_args()
@@ -269,7 +271,8 @@ class opts(object):
     print('training chunk_sizes:', opt.chunk_sizes)
 
     opt.root_dir = os.path.join(os.path.dirname(__file__), '..', '..')
-    opt.data_dir = os.path.join(opt.root_dir, 'data')
+    opt.root_dir ="/home/psrahul/MasterThesis/repo/Phase7/CenterCLIP_Outputs/"
+    opt.data_dir = os.path.join(opt.data_root_dir, 'data')
     opt.exp_dir = os.path.join(opt.root_dir, 'exp', opt.task)
     opt.save_dir = os.path.join(opt.exp_dir, opt.exp_id)
     opt.debug_dir = os.path.join(opt.save_dir, 'debug')
