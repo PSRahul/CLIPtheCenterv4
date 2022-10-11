@@ -1,0 +1,1 @@
+python main.py ctdet --exp_id coco_resdcn18 --arch res_18 --batch_size 4  --lr 5e-4 --gpus 0 --num_workers 4
