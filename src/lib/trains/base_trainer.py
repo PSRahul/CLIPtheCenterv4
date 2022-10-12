@@ -7,7 +7,7 @@ import torch
 from progress.bar import Bar
 from models.data_parallel import DataParallel
 from utils.utils import AverageMeter
-
+from models.clip.clip_model import CLIPModel
 from models.decode import ctdet_decode
 
 class ModelWithLoss(torch.nn.Module):
@@ -28,6 +28,9 @@ class BaseTrainer(object):
     self.optimizer = optimizer
     self.loss_stats, self.loss = self._get_losses(opt)
     self.model_with_loss = ModelWithLoss(model, self.loss)
+    if opt.clip_encoder:
+      self.clip_model=CLIPModel(opt)
+
 
   def set_device(self, gpus, chunk_sizes, device):
     if len(gpus) > 1:
@@ -75,6 +78,9 @@ class BaseTrainer(object):
           heat=hm,wh= output['wh'], reg=output['reg'],
           cat_spec_wh=opt.cat_spec_wh, K=opt.K)
           dets[:, :, :4] *= opt.down_ratio
+
+          clip_encodings=self.clip_model(batch,dets)
+
 
       loss = loss.mean()
       if phase == 'train':
