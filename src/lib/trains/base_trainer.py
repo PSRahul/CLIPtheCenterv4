@@ -8,6 +8,7 @@ from progress.bar import Bar
 from models.data_parallel import DataParallel
 from utils.utils import AverageMeter
 
+from models.decode import ctdet_decode
 
 class ModelWithLoss(torch.nn.Module):
   def __init__(self, model, loss):
@@ -67,6 +68,14 @@ class BaseTrainer(object):
         if k != 'meta':
           batch[k] = batch[k].to(device=opt.device, non_blocking=True)    
       output, loss, loss_stats = model_with_loss(batch)
+      if opt.clip_encoder:
+        with torch.no_grad():
+          hm = output['hm'].sigmoid_()
+          dets = ctdet_decode(
+          heat=hm,wh= output['wh'], reg=output['reg'],
+          cat_spec_wh=opt.cat_spec_wh, K=opt.K)
+          dets[:, :, :4] *= opt.down_ratio
+
       loss = loss.mean()
       if phase == 'train':
         self.optimizer.zero_grad()
