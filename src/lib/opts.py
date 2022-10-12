@@ -230,6 +230,9 @@ class opts(object):
                              help='number of classes in the training set')
     self.parser.add_argument('--test_split', type=str,
                              help='test split for evaluation')
+    self.parser.add_argument('--clip_encoder',  action='store_true',
+                             help='Enable CLIP Training')
+
   def parse(self, args=''):
     if args == '':
       opt = self.parser.parse_args()
@@ -325,6 +328,8 @@ class opts(object):
                    'wh': 2 if not opt.cat_spec_wh else 2 * opt.num_classes}
       if opt.reg_offset:
         opt.heads.update({'reg': 2})
+      if opt.clip_encoder:
+        opt.heads.update({'clip': 1})
     elif opt.task == 'multi_pose':
       # assert opt.dataset in ['coco_hp']
       opt.flip_idx = dataset.flip_idx
