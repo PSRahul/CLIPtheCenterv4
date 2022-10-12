@@ -228,6 +228,8 @@ class opts(object):
                              help='root dir for dataset')
     self.parser.add_argument('--num_classes', type=int,
                              help='number of classes in the training set')
+    self.parser.add_argument('--test_split', type=str,
+                             help='test split for evaluation')
   def parse(self, args=''):
     if args == '':
       opt = self.parser.parse_args()
