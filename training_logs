@@ -1,0 +1,8 @@
+11 October 2022
+
+I trained the model on PASCAL_15_5 for 400 epochs. It trained for 400 epochs and it took around 12 hours.
+The issue was the validation loss does not actually correspond to mAP. It follows a U Curve. So the loss initially decreases and then increases again. Also the tensorboard log was not enabled.
+
+12 October 2022
+PASCAL_15_5_res_101_1210
+Evaluation on base classes worked. The model still has potential since the losses were decreasing. The model was changed from ResNet 50 to ResNet 101. The batch size was increased to 64 and set up was made for 800 epochs.

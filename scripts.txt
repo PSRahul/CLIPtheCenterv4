@@ -1,6 +1,6 @@
 PASCAL_15_5
 
- CUDA_VISIBLE_DEVICES=3 python main.py ctdet --exp_id PASCAL_15_5_res_50 --arch res_50 --batch_size 64  --lr 0.00014 --gpus 0 --num_workers 32 --num_epochs 800 --data_root_dir /home/psrahul/MasterThesis/datasets/PASCAL_15_5/base_classes/ --num_classes 15
+ CUDA_VISIBLE_DEVICES=3 python main.py ctdet --exp_id PASCAL_15_5_res_101_1210 --arch res_101 --batch_size 64  --lr 2.5e-4 --gpus 3 --num_workers 32 --num_epochs 800 --data_root_dir /home/psrahul/MasterThesis/datasets/PASCAL_15_5/base_classes/ --num_classes 15
 
 
 
