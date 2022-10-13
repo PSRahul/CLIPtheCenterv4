@@ -1,7 +1,6 @@
 import copy
 def make_detections_valid(output_res, detections):
     detections_valid = copy.deepcopy(detections)
-    detections_valid=detections_valid.reshape((detections_valid.shape[0]*detections_valid.shape[1],detections_valid.shape[2]))
     detections_valid[:,2]=detections_valid[:,2]-detections_valid[:,0]
     detections_valid[:,3] = detections_valid[:,  3] - detections_valid[:, 1]
     detections_valid[detections_valid[:, 0] <= 0, 0] = 0
@@ -19,5 +18,4 @@ def make_detections_valid(output_res, detections):
             detections_valid[i, 1] = output_res - 1 - detections_valid[i, 3]
     detections_valid[detections_valid[:, 0] <= 0, 0] = 0
     detections_valid[detections_valid[:, 1] <= 0, 1] = 0
-    detections_valid = detections_valid.reshape(detections.shape)
     return detections_valid

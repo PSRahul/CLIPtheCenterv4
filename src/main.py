@@ -15,7 +15,7 @@ from logger import Logger
 from datasets.dataset_factory import get_dataset
 from trains.train_factory import train_factory
 
-
+torch.autograd.set_detect_anomaly(True)
 def main(opt):
   torch.manual_seed(opt.seed)
   torch.backends.cudnn.benchmark = not opt.not_cuda_benchmark and not opt.test

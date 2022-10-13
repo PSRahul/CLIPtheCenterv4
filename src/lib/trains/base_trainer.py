@@ -9,17 +9,36 @@ from models.data_parallel import DataParallel
 from utils.utils import AverageMeter
 from models.clip.clip_model import CLIPModel
 from models.decode import ctdet_decode
-
+from models.clip.embedder import Embedder
 class ModelWithLoss(torch.nn.Module):
-  def __init__(self, model, loss):
+  def __init__(self, model, loss,opt,clip_model=None,embedder=None):
     super(ModelWithLoss, self).__init__()
     self.model = model
     self.loss = loss
+    self.opt=opt
+    self.clip_model=clip_model
+    self.embedder=embedder
   
   def forward(self, batch):
     outputs = self.model(batch['input'])
+
+    outputs=outputs[0]
+    if self.opt.clip_encoder:
+      with torch.no_grad():
+        hm = outputs['hm'].detach().sigmoid()
+        dets = ctdet_decode(
+          heat=hm, wh=outputs['wh'].detach(), reg=outputs['reg'].detach(),
+          cat_spec_wh=self.opt.cat_spec_wh, K=self.opt.clip_topk)
+        dets = dets.reshape((dets.shape[0] * dets.shape[1], dets.shape[2]))
+        dets[:, :4] *= self.opt.down_ratio
+        clip_embedding, dets = self.clip_model(batch, dets)
+        dets[:, :4] /= self.opt.down_ratio
+      model_embedding = self.embedder(outputs['clip'], dets)
+      outputs["model_embedding"]=model_embedding
+      outputs["clip_embedding"]=clip_embedding
+    outputs=[outputs]
     loss, loss_stats = self.loss(outputs, batch)
-    return outputs[-1], loss, loss_stats
+    return outputs, loss, loss_stats
 
 class BaseTrainer(object):
   def __init__(
@@ -27,10 +46,14 @@ class BaseTrainer(object):
     self.opt = opt
     self.optimizer = optimizer
     self.loss_stats, self.loss = self._get_losses(opt)
-    self.model_with_loss = ModelWithLoss(model, self.loss)
+    self.clip_model = None
+    self.embedder = None
     if opt.clip_encoder:
-      self.clip_model=CLIPModel(opt)
-
+      self.clip_model=CLIPModel(self.opt)
+      self.embedder=Embedder(self.opt)
+      self.clip_model.to("cuda")
+      self.embedder.to("cuda")
+    self.model_with_loss = ModelWithLoss(model, self.loss, opt,self.clip_model,self.embedder)
 
   def set_device(self, gpus, chunk_sizes, device):
     if len(gpus) > 1:
@@ -71,15 +94,6 @@ class BaseTrainer(object):
         if k != 'meta':
           batch[k] = batch[k].to(device=opt.device, non_blocking=True)    
       output, loss, loss_stats = model_with_loss(batch)
-      if opt.clip_encoder:
-        with torch.no_grad():
-          hm = output['hm'].sigmoid_()
-          dets = ctdet_decode(
-          heat=hm,wh= output['wh'], reg=output['reg'],
-          cat_spec_wh=opt.cat_spec_wh, K=opt.K)
-          dets[:, :, :4] *= opt.down_ratio
-
-          clip_encodings=self.clip_model(batch,dets)
 
 
       loss = loss.mean()

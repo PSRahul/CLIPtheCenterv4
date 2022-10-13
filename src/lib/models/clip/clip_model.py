@@ -18,11 +18,13 @@ class CLIPModel(nn.Module):
 
         dets=make_detections_valid(self.opt.output_res,dets)
 
-        clip_encodings = torch.zeros((dets.shape[0], dets.shape[1],512))
+        dets = dets.reshape((batch["input"].shape[0] , self.opt.clip_topk, dets.shape[1]))
+        clip_encodings = torch.zeros((dets.shape[0],dets.shape[1], 512),device="cuda")
         for batch_index in range(dets.shape[0]):
             image=batch["input"][batch_index,:,:,:]
             transform = T.ToPILImage()
             image = transform(image)
+
             for topk_index in range(dets.shape[1]):
                     bbox = dets[batch_index,topk_index,0:4]
                     (left, upper, right, lower) = (
@@ -36,7 +38,9 @@ class CLIPModel(nn.Module):
                     clip_encodings[batch_index,topk_index,:] = image_clip_embedding
 
         clip_encodings /= clip_encodings.norm(dim=-1, keepdim=True)
-        return clip_encodings
+        clip_encodings=clip_encodings.reshape((batch["input"].shape[0] * self.opt.clip_topk,512))
+        dets = dets.reshape((dets.shape[0]*dets.shape[1], dets.shape[2]))
+        return clip_encodings,dets
 
     def print_details(self):
         pass

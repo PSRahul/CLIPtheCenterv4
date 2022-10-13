@@ -232,6 +232,10 @@ class opts(object):
                              help='test split for evaluation')
     self.parser.add_argument('--clip_encoder',  action='store_true',
                              help='Enable CLIP Training')
+    self.parser.add_argument('--clip_topk', type=int, default=10,
+                             help='max number of output objects.')
+    self.parser.add_argument('--embed_weight', type=float, default=1,
+                             help='Weight for embedding loss')
 
   def parse(self, args=''):
     if args == '':
