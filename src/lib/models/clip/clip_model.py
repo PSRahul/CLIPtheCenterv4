@@ -15,7 +15,7 @@ class CLIPModel(nn.Module):
         self.clip_model = self.clip_model.cuda().eval()
 
     def forward(self, batch, dets):
-
+        self.clip_model = self.clip_model.cuda().eval()
         dets=make_detections_valid(self.opt.output_res,dets)
 
         dets = dets.reshape((batch["input"].shape[0] , self.opt.clip_topk, dets.shape[1]))

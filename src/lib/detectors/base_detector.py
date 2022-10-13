@@ -12,6 +12,7 @@ from models.model import create_model, load_model
 from utils.image import get_affine_transform
 from utils.debugger import Debugger
 from models.clip.embedder import Embedder
+from models.clip.clip_utils import make_detections_valid
 
 class BaseDetector(object):
   def __init__(self, opt,embedder):
@@ -25,6 +26,7 @@ class BaseDetector(object):
     self.model,self.embedder = load_model(self.model, opt.load_model,embedder=embedder)
     self.model = self.model.to(opt.device)
     self.model.eval()
+    self.embedder.eval()
 
     self.mean = np.array(opt.mean, dtype=np.float32).reshape(1, 1, 3)
     self.std = np.array(opt.std, dtype=np.float32).reshape(1, 1, 3)

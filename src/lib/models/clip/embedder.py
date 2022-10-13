@@ -12,17 +12,22 @@ class Embedder(nn.Module):
             "pytorch/vision:v0.10.0",
             "resnet18", weights=ResNet18_Weights.DEFAULT
         )
+        self.model.fc=nn.Flatten()
+        """
         self.model = torch.hub.load(
             "pytorch/vision:v0.10.0",
             "resnet50", weights=ResNet50_Weights.DEFAULT
         )
-
+        
+        self.model.fc = nn.Linear(2048, 512)
+        """
         self.model.conv1 = nn.Conv2d(1, 64, 7, stride=2, padding=3, bias=False)
 
-        self.model.fc = nn.Linear(2048,512)
+
         #self.print_details()
 
     def forward(self, heatmap_output,dets):
+
         dets = dets.reshape((heatmap_output.shape[0], self.opt.clip_topk, dets.shape[1]))
         masked_heatmap = torch.zeros((dets.shape[0],dets.shape[1], 1, self.opt.output_res, self.opt.output_res),device="cuda")
 

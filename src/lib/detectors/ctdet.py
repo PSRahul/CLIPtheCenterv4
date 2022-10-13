@@ -19,6 +19,7 @@ from utils.image import get_affine_transform
 from utils.post_process import ctdet_post_process
 from utils.debugger import Debugger
 from models.clip.embedder import Embedder
+from models.clip.clip_utils import make_detections_valid
 
 from .base_detector import BaseDetector
 
@@ -44,7 +45,8 @@ class CtdetDetector(BaseDetector):
       torch.cuda.synchronize()
       forward_time = time.time()
       dets = ctdet_decode(hm, wh, reg=reg, cat_spec_wh=self.opt.cat_spec_wh, K=self.opt.K)
-      
+
+
     if return_time:
       return output, dets, forward_time
     else:
@@ -52,7 +54,7 @@ class CtdetDetector(BaseDetector):
 
   def post_process(self, dets, meta, scale=1):
     dets = dets.detach().cpu().numpy()
-    dets = dets.reshape(1, -1, dets.shape[2])
+    dets = dets.reshape(1, -1, dets.shape[1])
     dets = ctdet_post_process(
         dets.copy(), [meta['c']], [meta['s']],
         meta['out_height'], meta['out_width'], self.opt.num_classes)
