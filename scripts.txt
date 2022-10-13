@@ -22,5 +22,6 @@ python test.py ctdet --exp_id PASCAL_15_5_res_50 --arch res_50 --keep_res --resu
 python test.py ctdet --exp_id PASCAL_15_5_res_50 --arch res_50 --keep_res --resume --data_root_dir /home/psrahul/MasterThesis/datasets/PASCAL_15_5/base_classes/ --num_classes 15 --test_split test --load_model /home/psrahul/MasterThesis/repo/Phase7/CenterCLIP_Outputs/exp/ctdet/PASCAL_15_5_res_50/model_best.pth
 
 local_test
-ctdet --exp_id PASCAL_15_5_res_50_cliptest --arch res_50 --batch_size 4  --lr 2.5e-4 --gpus 0 --num_workers 4 --num_epochs 200 --data_root_dir /home/psrahul/MasterThesis/datasets/PASCAL_3_2_10/base_classes/ --num_classes 3 --clip_encoder
+ctdet --exp_id PASCAL_15_5_res_50_cliptest --arch res_50 --batch_size 4  --lr 2.5e-4 --gpus 0 --num_workers 4 --num_epochs 200 --data_root_dir /home/psrahul/MasterThesis/datasets/PASCAL_3_2_10/base_classes/ --num_classes 3 --clip_encoder --load_model /home/psrahul/MasterThesis/repo/Phase7/CenterCLIP_Outputs/exp/ctdet/PASCAL_15_5_res_50_cliptest/model_best.pth
 
+python test.py ctdet --exp_id PASCAL_15_5_res_50_cliptest --arch res_50 --keep_res --data_root_dir /home/psrahul/MasterThesis/datasets/PASCAL_3_2_10/base_classes/ --num_classes 3  --clip_encoder --test_split train --load_model "/home/psrahul/MasterThesis/repo/Phase7/CenterCLIP_Outputs/exp/ctdet/PASCAL_15_5_res_50_cliptest/model_last.pth"

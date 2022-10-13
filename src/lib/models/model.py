@@ -29,7 +29,7 @@ def create_model(arch, heads, head_conv):
   return model
 
 def load_model(model, model_path, optimizer=None, resume=False, 
-               lr=None, lr_step=None):
+               lr=None, lr_step=None,embedder=None):
   start_epoch = 0
   checkpoint = torch.load(model_path, map_location=lambda storage, loc: storage)
   print('loaded {}, epoch {}'.format(model_path, checkpoint['epoch']))
@@ -63,6 +63,7 @@ def load_model(model, model_path, optimizer=None, resume=False,
       print('No param {}.'.format(k) + msg)
       state_dict[k] = model_state_dict[k]
   model.load_state_dict(state_dict, strict=False)
+  embedder.load_state_dict(checkpoint['embedder_dict'], strict=False)
 
   # resume optimizer parameters
   if optimizer is not None and resume:
@@ -83,13 +84,15 @@ def load_model(model, model_path, optimizer=None, resume=False,
   else:
     return model
 
-def save_model(path, epoch, model, optimizer=None):
+def save_model(path, epoch, model, optimizer=None,clip_model=None,embedder=None):
   if isinstance(model, torch.nn.DataParallel):
     state_dict = model.module.state_dict()
   else:
     state_dict = model.state_dict()
   data = {'epoch': epoch,
-          'state_dict': state_dict}
+          'state_dict': state_dict,
+          'embedder_dict': embedder.state_dict(),
+          }
   if not (optimizer is None):
     data['optimizer'] = optimizer.state_dict()
   torch.save(data, path)

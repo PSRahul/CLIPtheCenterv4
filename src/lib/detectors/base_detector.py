@@ -125,6 +125,7 @@ class BaseDetector(object):
       
       dets = self.post_process(dets, meta, scale)
       torch.cuda.synchronize()
+
       post_process_time = time.time()
       post_time += post_process_time - decode_time
 

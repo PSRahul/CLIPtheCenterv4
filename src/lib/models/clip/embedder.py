@@ -20,7 +20,7 @@ class Embedder(nn.Module):
         self.model.conv1 = nn.Conv2d(1, 64, 7, stride=2, padding=3, bias=False)
 
         self.model.fc = nn.Linear(2048,512)
-        self.print_details()
+        #self.print_details()
 
     def forward(self, heatmap_output,dets):
         dets = dets.reshape((heatmap_output.shape[0], self.opt.clip_topk, dets.shape[1]))

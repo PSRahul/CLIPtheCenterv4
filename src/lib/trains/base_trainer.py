@@ -42,18 +42,11 @@ class ModelWithLoss(torch.nn.Module):
 
 class BaseTrainer(object):
   def __init__(
-    self, opt, model, optimizer=None):
+    self, opt, model, optimizer=None,clip_model=None,embedder=None):
     self.opt = opt
     self.optimizer = optimizer
     self.loss_stats, self.loss = self._get_losses(opt)
-    self.clip_model = None
-    self.embedder = None
-    if opt.clip_encoder:
-      self.clip_model=CLIPModel(self.opt)
-      self.embedder=Embedder(self.opt)
-      self.clip_model.to("cuda")
-      self.embedder.to("cuda")
-    self.model_with_loss = ModelWithLoss(model, self.loss, opt,self.clip_model,self.embedder)
+    self.model_with_loss = ModelWithLoss(model, self.loss, opt,clip_model,embedder)
 
   def set_device(self, gpus, chunk_sizes, device):
     if len(gpus) > 1:
