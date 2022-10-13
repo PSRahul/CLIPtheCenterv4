@@ -37,8 +37,9 @@ class CLIPModel(nn.Module):
 
                     clip_encodings[batch_index,topk_index,:] = image_clip_embedding
 
-        clip_encodings /= clip_encodings.norm(dim=-1, keepdim=True)
         clip_encodings=clip_encodings.reshape((batch["input"].shape[0] * self.opt.clip_topk,512))
+        clip_encodings /= clip_encodings.norm(dim=-1, keepdim=True)
+
         dets = dets.reshape((dets.shape[0]*dets.shape[1], dets.shape[2]))
         return clip_encodings,dets
 
