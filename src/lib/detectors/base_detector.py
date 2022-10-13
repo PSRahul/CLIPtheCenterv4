@@ -11,10 +11,10 @@ import torch
 from models.model import create_model, load_model
 from utils.image import get_affine_transform
 from utils.debugger import Debugger
-
+from models.clip.embedder import Embedder
 
 class BaseDetector(object):
-  def __init__(self, opt):
+  def __init__(self, opt,embedder):
     if opt.gpus[0] >= 0:
       opt.device = torch.device('cuda')
     else:
@@ -22,7 +22,7 @@ class BaseDetector(object):
     
     print('Creating model...')
     self.model = create_model(opt.arch, opt.heads, opt.head_conv)
-    self.model = load_model(self.model, opt.load_model)
+    self.model,self.embedder = load_model(self.model, opt.load_model,embedder=embedder)
     self.model = self.model.to(opt.device)
     self.model.eval()
 

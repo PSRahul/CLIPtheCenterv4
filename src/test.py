@@ -18,7 +18,8 @@ from logger import Logger
 from utils.utils import AverageMeter
 from datasets.dataset_factory import dataset_factory
 from detectors.detector_factory import detector_factory
-
+from models.clip.clip_model import CLIPModel
+from models.clip.embedder import Embedder
 class PrefetchDataset(torch.utils.data.Dataset):
   def __init__(self, opt, dataset, pre_process_func):
     self.images = dataset.images

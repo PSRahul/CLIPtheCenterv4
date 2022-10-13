@@ -63,7 +63,8 @@ def load_model(model, model_path, optimizer=None, resume=False,
       print('No param {}.'.format(k) + msg)
       state_dict[k] = model_state_dict[k]
   model.load_state_dict(state_dict, strict=False)
-  embedder.load_state_dict(checkpoint['embedder_dict'], strict=False)
+  if(embedder!=None):
+    embedder.load_state_dict(checkpoint['embedder_dict'], strict=False)
 
   # resume optimizer parameters
   if optimizer is not None and resume:
@@ -80,9 +81,9 @@ def load_model(model, model_path, optimizer=None, resume=False,
     else:
       print('No optimizer parameters in checkpoint.')
   if optimizer is not None:
-    return model, optimizer, start_epoch
+    return model, optimizer, start_epoch,embedder
   else:
-    return model
+    return model,embedder
 
 def save_model(path, epoch, model, optimizer=None,clip_model=None,embedder=None):
   if isinstance(model, torch.nn.DataParallel):
