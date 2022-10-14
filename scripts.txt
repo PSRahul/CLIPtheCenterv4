@@ -24,7 +24,7 @@ python test.py ctdet --exp_id PASCAL_15_5_res_50 --arch res_50 --keep_res --resu
 clip_local_test
 ctdet --exp_id PASCAL_2012_ZETA_CA_res_18_cliptest --arch res_18 --batch_size 3  --lr 0.175e-4 --gpus 3 --num_workers 3 --num_epochs 200 --data_root_dir /home/psrahul/MasterThesis/datasets/PASCAL_2012_ZETA_CA/base_classes/ --num_classes 1 --clip_encoder --clip_topk 10
 
-
+ctdet --exp_id PASCAL_2012_ZETA_CA_res_18_cliptest_wo_clip --arch res_18 --batch_size 3  --lr 0.175e-4 --gpus 3 --num_workers 3 --num_epochs 200 --data_root_dir /home/psrahul/MasterThesis/datasets/PASCAL_2012_ZETA_CA/base_classes/ --num_classes 1
 
 python test.py
 ctdet --exp_id PASCAL_15_5_res_18_cliptest --arch res_18 --data_root_dir /home/psrahul/MasterThesis/datasets/PASCAL_3_2_10/base_classes/ --num_classes 3  --clip_encoder --test_split train --load_model /home/psrahul/MasterThesis/repo/Phase7/CenterCLIP_Outputs/exp/ctdet/PASCAL_15_5_res_18_cliptest/model_best.pth
