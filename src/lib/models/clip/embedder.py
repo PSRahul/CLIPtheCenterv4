@@ -40,10 +40,12 @@ class Embedder(nn.Module):
                 (left, upper, right, lower) = (
                     int(bbox[0]), int(bbox[1]), int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
 
-                heatmap_index=heatmap_output[batch_index,0,upper:lower,left:right]
-                heatmap_index=heatmap_index.unsqueeze(0).unsqueeze(0)
-                upsampled_heatmap_index=torch.nn.functional.interpolate(heatmap_index,(self.opt.output_res, self.opt.output_res),mode="bilinear")[0]
-                masked_heatmap[batch_index,topk_index,:,:,:]=upsampled_heatmap_index
+                #heatmap_index=heatmap_output[batch_index,0,upper:lower,left:right]
+                #heatmap_index=heatmap_index.unsqueeze(0).unsqueeze(0)
+                #upsampled_heatmap_index=torch.nn.functional.interpolate(heatmap_index,(self.opt.output_res, self.opt.output_res),mode="bilinear")[0]
+
+                mask_topk_index[0,upper:lower,left:right]=1
+                masked_heatmap[batch_index,topk_index,:,:,:]=heatmap_batch_index*mask_topk_index
         masked_heatmap=masked_heatmap.reshape((dets.shape[0]*dets.shape[1], 1, self.opt.output_res, self.opt.output_res))
         model_encoding= self.model(masked_heatmap)
 
