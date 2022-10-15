@@ -15,7 +15,7 @@ from models.clip.embedder import Embedder
 from models.clip.clip_utils import make_detections_valid
 
 class BaseDetector(object):
-  def __init__(self, opt,embedder):
+  def __init__(self, opt,embedder=None):
     if opt.gpus[0] >= 0:
       opt.device = torch.device('cuda')
     else:
@@ -28,6 +28,7 @@ class BaseDetector(object):
     self.model.eval()
     if embedder!=None:
       self.embedder.eval()
+      self.embedder = self.embedder.to(opt.device)
 
     self.mean = np.array(opt.mean, dtype=np.float32).reshape(1, 1, 3)
     self.std = np.array(opt.std, dtype=np.float32).reshape(1, 1, 3)
