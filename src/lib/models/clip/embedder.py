@@ -20,9 +20,9 @@ class Embedder(nn.Module):
             "pytorch/vision:v0.10.0",
             "resnet50", weights=ResNet50_Weights.DEFAULT
         )
-        """
+        
         self.model.fc = nn.Linear(2048, 512)
-
+        """
         self.model.conv1 = nn.Conv2d(1, 64, 7, stride=2, padding=3, bias=False)
 
 

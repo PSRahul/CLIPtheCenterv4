@@ -18,6 +18,6 @@ ctdet --exp_id PASCAL_3_2_10_CA_res_18_cliptest_4 --arch res_18 --data_root_dir 
 
 ## PASCAL_15_5 With CLIP
 
- CUDA_VISIBLE_DEVICES=0,1,2,3 python main.py ctdet --exp_id PASCAL_15_5_CA_res_50_1510_clip --arch res_50 --batch_size 128  --lr 5e-4 --gpus 0,1,2,3 --num_workers 100 --num_epochs 100 --data_root_dir /home/psrahul/MasterThesis/datasets/centernet/coco/PASCAL_15_5_CA/base_classes/ --num_classes 1 --clip_encoder --clip_topk 100
+ CUDA_VISIBLE_DEVICES=0,1,2,3 python main.py ctdet --exp_id PASCAL_15_5_CA_res_50_1510_clip --arch res_50 --batch_size 128  --lr 5e-4 --gpus 0,1,2,3 --num_workers 100 --num_epochs 100 --data_root_dir /home/psrahul/MasterThesis/datasets/centernet/coco/PASCAL_15_5_CA/base_classes/ --num_classes 1 --clip_encoder --clip_topk 25
 
 python test.py ctdet --exp_id coco_resdcn18 --arch res_18 --keep_res --resume --num_epochs 400
