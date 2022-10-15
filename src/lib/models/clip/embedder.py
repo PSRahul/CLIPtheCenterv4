@@ -8,6 +8,8 @@ class Embedder(nn.Module):
     def __init__(self,opt):
         super().__init__()
         self.opt=opt
+
+        """
         self.model = torch.hub.load(
             "pytorch/vision:v0.10.0",
             "resnet18", weights=ResNet18_Weights.DEFAULT
@@ -20,7 +22,7 @@ class Embedder(nn.Module):
         )
         
         self.model.fc = nn.Linear(2048, 512)
-        """
+
         self.model.conv1 = nn.Conv2d(1, 64, 7, stride=2, padding=3, bias=False)
 
 
