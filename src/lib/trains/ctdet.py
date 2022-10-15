@@ -24,10 +24,13 @@ class CtdetLoss(torch.nn.Module):
               NormRegL1Loss() if opt.norm_wh else \
               RegWeightedL1Loss() if opt.cat_spec_wh else self.crit_reg
     self.opt = opt
-
+    if opt.clip_encoder:
+      self.crit_embedding_loss=torch.nn.CosineEmbeddingLoss()
   def forward(self, outputs, batch):
     opt = self.opt
     hm_loss, wh_loss, off_loss = 0, 0, 0
+
+    embed_loss=0
     for s in range(opt.num_stacks):
       output = outputs[s]
       if not opt.mse_loss:
@@ -66,19 +69,30 @@ class CtdetLoss(torch.nn.Module):
       if opt.reg_offset and opt.off_weight > 0:
         off_loss += self.crit_reg(output['reg'], batch['reg_mask'],
                              batch['ind'], batch['reg']) / opt.num_stacks
+      if opt.clip_encoder:
+        embed_loss+= self.crit_embedding_loss(output["model_embedding"],output["clip_embedding"],target=torch.ones((output["model_embedding"].shape[0]),device="cuda"))
         
     loss = opt.hm_weight * hm_loss + opt.wh_weight * wh_loss + \
-           opt.off_weight * off_loss
-    loss_stats = {'loss': loss, 'hm_loss': hm_loss,
-                  'wh_loss': wh_loss, 'off_loss': off_loss}
+           opt.off_weight * off_loss+opt.embed_weight*embed_loss
+    if opt.clip_encoder:
+      loss_stats = {'loss': loss, 'hm_loss': hm_loss,
+                  'wh_loss': wh_loss, 'off_loss': off_loss,'embed_loss':embed_loss}
+    else:
+      loss_stats = {'loss': loss, 'hm_loss': hm_loss,
+                    'wh_loss': wh_loss, 'off_loss': off_loss}
+
     return loss, loss_stats
 
 class CtdetTrainer(BaseTrainer):
-  def __init__(self, opt, model, optimizer=None):
-    super(CtdetTrainer, self).__init__(opt, model, optimizer=optimizer)
+  def __init__(self, opt, model, optimizer=None,clip_model=None,embedder=None):
+    super(CtdetTrainer, self).__init__(opt, model, optimizer=optimizer,clip_model=clip_model,embedder=embedder)
   
   def _get_losses(self, opt):
-    loss_states = ['loss', 'hm_loss', 'wh_loss', 'off_loss']
+    if opt.clip_encoder:
+
+      loss_states = ['loss', 'hm_loss', 'wh_loss', 'off_loss','embed_loss']
+    else:
+      loss_states = ['loss', 'hm_loss', 'wh_loss', 'off_loss']
     loss = CtdetLoss(opt)
     return loss_states, loss
 

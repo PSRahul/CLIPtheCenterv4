@@ -198,6 +198,9 @@ class COCO(data.Dataset):
             "bbox": bbox_out,
             "score": float("{:.2f}".format(score))
           }
+          if (self.opt.clip_encoder):
+            clip_encoding = list(map(self._to_float, bbox[5:]))
+            detection["clip_encoding"]=clip_encoding
           if len(bbox) > 5:
             extreme_points = list(map(self._to_float, bbox[5:13]))
             detection["extreme_points"] = extreme_points

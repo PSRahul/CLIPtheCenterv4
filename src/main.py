@@ -10,12 +10,14 @@ import torch
 import torch.utils.data
 from opts import opts
 from models.model import create_model, load_model, save_model
+from models.clip.clip_model import CLIPModel
+from models.clip.embedder import Embedder
 from models.data_parallel import DataParallel
 from logger import Logger
 from datasets.dataset_factory import get_dataset
 from trains.train_factory import train_factory
 
-
+torch.autograd.set_detect_anomaly(True)
 def main(opt):
   torch.manual_seed(opt.seed)
   torch.backends.cudnn.benchmark = not opt.not_cuda_benchmark and not opt.test
@@ -30,14 +32,22 @@ def main(opt):
   
   print('Creating model...')
   model = create_model(opt.arch, opt.heads, opt.head_conv)
+  clip_model = None
+  embedder = None
+  if opt.clip_encoder:
+      clip_model = CLIPModel(opt)
+      embedder = Embedder(opt)
+      clip_model.to("cuda")
+      embedder.to("cuda")
+
   optimizer = torch.optim.Adam(model.parameters(), opt.lr)
   start_epoch = 0
   if opt.load_model != '':
-    model, optimizer, start_epoch = load_model(
-      model, opt.load_model, optimizer, opt.resume, opt.lr, opt.lr_step)
+    model, optimizer, start_epoch,embedder = load_model(
+      model, opt.load_model, optimizer, opt.resume, opt.lr, opt.lr_step,embedder=embedder)
 
   Trainer = train_factory[opt.task]
-  trainer = Trainer(opt, model, optimizer)
+  trainer = Trainer(opt, model, optimizer,clip_model,embedder)
   trainer.set_device(opt.gpus, opt.chunk_sizes, opt.device)
 
   print('Setting up data...')
@@ -74,7 +84,7 @@ def main(opt):
       logger.write('{} {:8f} | '.format(k, v))
     if opt.val_intervals > 0 and epoch % opt.val_intervals == 0:
       save_model(os.path.join(opt.save_dir, 'model_{}.pth'.format(mark)), 
-                 epoch, model, optimizer)
+                 epoch, model, optimizer,clip_model,embedder)
       with torch.no_grad():
         log_dict_val, preds = trainer.val(epoch, val_loader)
       for k, v in log_dict_val.items():
@@ -83,14 +93,14 @@ def main(opt):
       if log_dict_val[opt.metric] < best:
         best = log_dict_val[opt.metric]
         save_model(os.path.join(opt.save_dir, 'model_best.pth'), 
-                   epoch, model)
+                   epoch, model,clip_model=clip_model,embedder=embedder)
     else:
       save_model(os.path.join(opt.save_dir, 'model_last.pth'), 
-                 epoch, model, optimizer)
+                 epoch, model, optimizer,clip_model=clip_model,embedder=embedder)
     logger.write('\n')
     if epoch in opt.lr_step:
       save_model(os.path.join(opt.save_dir, 'model_{}.pth'.format(epoch)), 
-                 epoch, model, optimizer)
+                 epoch, model, optimizer,clip_model=clip_model,embedder=embedder)
       lr = opt.lr * (0.1 ** (opt.lr_step.index(epoch) + 1))
       print('Drop LR to', lr)
       for param_group in optimizer.param_groups:

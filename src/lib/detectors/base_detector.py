@@ -11,10 +11,11 @@ import torch
 from models.model import create_model, load_model
 from utils.image import get_affine_transform
 from utils.debugger import Debugger
-
+from models.clip.embedder import Embedder
+from models.clip.clip_utils import make_detections_valid
 
 class BaseDetector(object):
-  def __init__(self, opt):
+  def __init__(self, opt,embedder=None):
     if opt.gpus[0] >= 0:
       opt.device = torch.device('cuda')
     else:
@@ -22,9 +23,12 @@ class BaseDetector(object):
     
     print('Creating model...')
     self.model = create_model(opt.arch, opt.heads, opt.head_conv)
-    self.model = load_model(self.model, opt.load_model)
+    self.model,self.embedder = load_model(self.model, opt.load_model,embedder=embedder)
     self.model = self.model.to(opt.device)
     self.model.eval()
+    if embedder!=None:
+      self.embedder.eval()
+      self.embedder = self.embedder.to(opt.device)
 
     self.mean = np.array(opt.mean, dtype=np.float32).reshape(1, 1, 3)
     self.std = np.array(opt.std, dtype=np.float32).reshape(1, 1, 3)
@@ -125,6 +129,7 @@ class BaseDetector(object):
       
       dets = self.post_process(dets, meta, scale)
       torch.cuda.synchronize()
+
       post_process_time = time.time()
       post_time += post_process_time - decode_time
 
