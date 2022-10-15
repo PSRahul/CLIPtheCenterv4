@@ -19,3 +19,5 @@ def make_detections_valid(output_res, detections):
     detections_valid[detections_valid[:, 0] <= 0, 0] = 0
     detections_valid[detections_valid[:, 1] <= 0, 1] = 0
     return detections_valid
+
+

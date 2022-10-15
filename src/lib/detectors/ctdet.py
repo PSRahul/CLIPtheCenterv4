@@ -12,6 +12,7 @@ import torch
 
 try:
     from external.nms import soft_nms
+    #from models.clip.nms import soft_nms
 except:
     print('NMS not imported! If you need it,'
           ' do \n cd $CenterNet_ROOT/src/lib/external \n make')
@@ -73,7 +74,7 @@ class CtdetDetector(BaseDetector):
             dets.copy(), [meta['c']], [meta['s']],
             meta['out_height'], meta['out_width'], self.opt.num_classes,self.opt.clip_encoder)
         for j in range(1, self.num_classes + 1):
-            dets[0][j] = np.array(dets[0][j], dtype=np.float32).reshape(-1, 5)
+            dets[0][j] = np.array(dets[0][j], dtype=np.float32)#.reshape(-1, 5)
             dets[0][j][:, :4] /= scale
         return dets[0]
 
