@@ -26,7 +26,8 @@ class BaseDetector(object):
     self.model,self.embedder = load_model(self.model, opt.load_model,embedder=embedder)
     self.model = self.model.to(opt.device)
     self.model.eval()
-    self.embedder.eval()
+    if embedder!=None:
+      self.embedder.eval()
 
     self.mean = np.array(opt.mean, dtype=np.float32).reshape(1, 1, 3)
     self.std = np.array(opt.std, dtype=np.float32).reshape(1, 1, 3)
