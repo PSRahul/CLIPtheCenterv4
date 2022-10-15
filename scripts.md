@@ -16,6 +16,12 @@ ctdet --exp_id PASCAL_3_2_10_CA_res_18_cliptest_4 --arch res_18 --batch_size 4 -
 
 ctdet --exp_id PASCAL_3_2_10_CA_res_18_cliptest_4 --arch res_18 --data_root_dir /home/psrahul/MasterThesis/datasets/PASCAL_3_2_10_CA/base_classes/ --num_classes 1 --test_split train --load_model /home/psrahul/MasterThesis/repo/Phase7/CenterCLIP_Outputs/exp/ctdet/PASCAL_3_2_10_CA_res_18_cliptest_4/model_last.pth --nms --clip_encoder --clip_topk 25 --K 100
 
+## PASCAL_2012_ZETA With CLIP Local Test
+
+ctdet --exp_id PASCAL_2012_ZETA_res_18_cliptest --arch res_18 --batch_size 3 --lr 0.1314e-4 --gpus 0 --num_workers 8 --num_epochs 200 --data_root_dir /home/psrahul/MasterThesis/datasets/PASCAL_2012_ZETA/base_classes/ --num_classes 1 --clip_encoder --clip_topk 100
+
+ctdet --exp_id PASCAL_2012_ZETA_res_18_cliptest --arch res_18 --data_root_dir /home/psrahul/MasterThesis/datasets/PASCAL_2012_ZETA/base_classes/ --num_classes 1 --test_split train --load_model /home/psrahul/MasterThesis/repo/Phase7/CenterCLIP_Outputs/exp/ctdet/PASCAL_3_2_10_CA_res_18_cliptest_4/model_last.pth --nms --clip_encoder --clip_topk 25 --K 100
+
 ## PASCAL_15_5 With CLIP
 
  CUDA_VISIBLE_DEVICES=0,1,2,3 python main.py ctdet --exp_id PASCAL_15_5_CA_res_18_1510_clip --arch res_18 --batch_size 256  --lr 1e-3 --gpus 0,1,2,3 --num_epochs 100 --lr_step 45,60 --data_root_dir /home/psrahul/MasterThesis/datasets/centernet/coco/PASCAL_15_5_CA/base_classes/ --num_classes 1 --clip_encoder --clip_topk 25 --num_workers 96 

@@ -1,5 +1,5 @@
-annFile = "/home/psrahul/MasterThesis/datasets/PASCAL_3_2_10/base_classes/train/coco/labels.json"
-resFile = "/home/psrahul/MasterThesis/repo/Phase7/CenterCLIP_Outputs/exp/ctdet/PASCAL_3_2_10_CA_res_18_cliptest_4/results.json"
+annFile = "/home/psrahul/MasterThesis/datasets/centernet/coco/PASCAL_15_5_1500/base_classes/train/coco/labels.json"
+resFile = "/home/psrahul/MasterThesis/repo/Phase7/CenterCLIP_Outputs/exp/ctdet/PASCAL_15_5_1500_CA_clip_res_18_1510/results.json"
 clip_embedding_root= "/home/psrahul/MasterThesis/datasets/BBoxGroundtruths/PASCAL_15_5/train/"
 
 
