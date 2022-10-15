@@ -74,8 +74,13 @@ class CtdetLoss(torch.nn.Module):
         
     loss = opt.hm_weight * hm_loss + opt.wh_weight * wh_loss + \
            opt.off_weight * off_loss+opt.embed_weight*embed_loss
-    loss_stats = {'loss': loss, 'hm_loss': hm_loss,
+    if opt.clip_encoder:
+      loss_stats = {'loss': loss, 'hm_loss': hm_loss,
                   'wh_loss': wh_loss, 'off_loss': off_loss,'embed_loss':embed_loss}
+    else:
+      loss_stats = {'loss': loss, 'hm_loss': hm_loss,
+                    'wh_loss': wh_loss, 'off_loss': off_loss}
+
     return loss, loss_stats
 
 class CtdetTrainer(BaseTrainer):
@@ -83,7 +88,11 @@ class CtdetTrainer(BaseTrainer):
     super(CtdetTrainer, self).__init__(opt, model, optimizer=optimizer,clip_model=clip_model,embedder=embedder)
   
   def _get_losses(self, opt):
-    loss_states = ['loss', 'hm_loss', 'wh_loss', 'off_loss','embed_loss']
+    if opt.clip_encoder:
+
+      loss_states = ['loss', 'hm_loss', 'wh_loss', 'off_loss','embed_loss']
+    else:
+      loss_states = ['loss', 'hm_loss', 'wh_loss', 'off_loss']
     loss = CtdetLoss(opt)
     return loss_states, loss
 

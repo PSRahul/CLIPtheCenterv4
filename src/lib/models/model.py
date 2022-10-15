@@ -92,8 +92,10 @@ def save_model(path, epoch, model, optimizer=None,clip_model=None,embedder=None)
     state_dict = model.state_dict()
   data = {'epoch': epoch,
           'state_dict': state_dict,
-          'embedder_dict': embedder.state_dict(),
+
           }
+  if embedder!=None:
+    data['embedder_dict']= embedder.state_dict()
   if not (optimizer is None):
     data['optimizer'] = optimizer.state_dict()
   torch.save(data, path)
