@@ -60,7 +60,7 @@ class CtdetDetector(BaseDetector):
 
                     dets = dets.reshape((dets.shape[0] * dets.shape[1], dets.shape[2]))
                     dets=torch.hstack((dets,model_embedding))
-                    dets = dets.reshape((hm.shape[0] , self.opt.clip_topk,-1))
+                    dets = dets.reshape((hm.shape[0] , self.opt.K,-1))
 
         if return_time:
             return output, dets, forward_time

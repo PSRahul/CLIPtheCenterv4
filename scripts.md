@@ -14,7 +14,7 @@ python test.py ctdet --exp_id PASCAL_15_5_res_50 --arch res_50 --keep_res --resu
 
 ctdet --exp_id PASCAL_3_2_10_CA_res_18_cliptest_4 --arch res_18 --batch_size 4 --lr 0.1314e-4 --gpus 0 --num_workers 8 --num_epochs 200 --data_root_dir /home/psrahul/MasterThesis/datasets/PASCAL_3_2_10_CA/base_classes/ --num_classes 1 --clip_encoder --clip_topk 100
 
-ctdet --exp_id PASCAL_3_2_10_CA_res_18_cliptest_4 --arch res_18 --data_root_dir /home/psrahul/MasterThesis/datasets/PASCAL_3_2_10_CA/base_classes/ --num_classes 1 --test_split train --load_model /home/psrahul/MasterThesis/repo/Phase7/CenterCLIP_Outputs/exp/ctdet/PASCAL_3_2_10_CA_res_18_cliptest_4/model_last.pth --nms --clip_encoder --clip_topk 100
+ctdet --exp_id PASCAL_3_2_10_CA_res_18_cliptest_4 --arch res_18 --data_root_dir /home/psrahul/MasterThesis/datasets/PASCAL_3_2_10_CA/base_classes/ --num_classes 1 --test_split train --load_model /home/psrahul/MasterThesis/repo/Phase7/CenterCLIP_Outputs/exp/ctdet/PASCAL_3_2_10_CA_res_18_cliptest_4/model_last.pth --nms --clip_encoder --clip_topk 25 --K 100
 
 ## PASCAL_15_5 With CLIP
 
