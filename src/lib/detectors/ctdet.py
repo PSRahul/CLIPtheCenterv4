@@ -18,13 +18,20 @@ from models.utils import flip_tensor
 from utils.image import get_affine_transform
 from utils.post_process import ctdet_post_process
 from utils.debugger import Debugger
+from models.clip.embedder import Embedder
+from models.clip.clip_utils import make_detections_valid
 
 from .base_detector import BaseDetector
 
 
 class CtdetDetector(BaseDetector):
     def __init__(self, opt):
-        super(CtdetDetector, self).__init__(opt)
+        embedder = None
+        if opt.clip_encoder:
+            embedder = Embedder(opt)
+            embedder.to("cuda")
+
+        super(CtdetDetector, self).__init__(opt, embedder)
 
     def process(self, images, return_time=False):
         with torch.no_grad():
