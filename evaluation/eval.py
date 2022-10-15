@@ -1,5 +1,5 @@
-annFile = "/home/psrahul/MasterThesis/datasets/PASCAL_3_2_10_train/base_classes/train/coco/labels.json"
-resFile = "/home/psrahul/MasterThesis/repo/Phase7/CenterCLIP_Outputs/exp/ctdet/PASCAL_3_2_10_res_18/results.json"
+annFile = "/home/psrahul/MasterThesis/datasets/PASCAL_3_2_10_CA/base_classes/train/coco/labels.json"
+resFile = "/home/psrahul/MasterThesis/repo/Phase7/CenterCLIP_Outputs/exp/ctdet/PASCAL_3_2_10_CA_res_18_cliptest_4/results.json"
 
 
 import matplotlib.pyplot as plt
@@ -15,6 +15,8 @@ annType = annType[1]      #specify type here
 
 cocoGt=COCO(annFile)
 cocoDt=cocoGt.loadRes(resFile)
+
+
 
 class_name=[]
 class_id=[]
