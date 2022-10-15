@@ -24,13 +24,14 @@ class CLIPModel(nn.Module):
             image=batch["input"][batch_index,:,:,:]
             transform = T.ToPILImage()
             image = transform(image)
+            image.show()
 
             for topk_index in range(dets.shape[1]):
                     bbox = dets[batch_index,topk_index,0:4]
                     (left, upper, right, lower) = (
                         int(bbox[0]), int(bbox[1]), int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
                     image_cropped = image.crop((left, upper, right, lower))
-
+                    image_cropped.show()
                     image_cropped_clip = self.clip_preprocess(image_cropped).unsqueeze(0)
 
                     image_clip_embedding = self.clip_model.encode_image(image_cropped_clip.cuda())

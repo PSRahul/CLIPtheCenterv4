@@ -10,6 +10,9 @@ from utils.utils import AverageMeter
 from models.clip.clip_model import CLIPModel
 from models.decode import ctdet_decode
 from models.clip.embedder import Embedder
+from external.nms import soft_nms
+
+
 class ModelWithLoss(torch.nn.Module):
   def __init__(self, model, loss,opt,clip_model=None,embedder=None):
     super(ModelWithLoss, self).__init__()
@@ -29,6 +32,10 @@ class ModelWithLoss(torch.nn.Module):
         dets = ctdet_decode(
           heat=hm, wh=outputs['wh'].detach(), reg=outputs['reg'].detach(),
           cat_spec_wh=self.opt.cat_spec_wh, K=self.opt.clip_topk)
+        dets_numpy=dets.cpu().numpy()
+        for i in range(dets.shape[0]):
+          soft_nms(dets_numpy[i,:,:], Nt=0.5, method=2)
+        dets=torch.Tensor(dets_numpy)
         dets = dets.reshape((dets.shape[0] * dets.shape[1], dets.shape[2]))
         dets[:, :4] *= self.opt.down_ratio
         clip_embedding, dets = self.clip_model(batch, dets)

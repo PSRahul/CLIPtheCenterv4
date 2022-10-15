@@ -30,7 +30,7 @@ class Embedder(nn.Module):
 
     def forward(self, heatmap_output,dets):
 
-        dets = dets.reshape((heatmap_output.shape[0], self.opt.K, dets.shape[1]))
+        dets = dets.reshape((heatmap_output.shape[0], self.opt.clip_topk, dets.shape[1]))
         masked_heatmap = torch.zeros((dets.shape[0],dets.shape[1], 1, self.opt.output_res, self.opt.output_res),device="cuda")
 
         for batch_index in range(dets.shape[0]):
