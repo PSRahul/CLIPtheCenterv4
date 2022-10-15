@@ -2,6 +2,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import copy
+
 import cv2
 import numpy as np
 from progress.bar import Bar
@@ -46,6 +48,17 @@ class CtdetDetector(BaseDetector):
             torch.cuda.synchronize()
             forward_time = time.time()
             dets = ctdet_decode(hm, wh, reg=reg, cat_spec_wh=self.opt.cat_spec_wh, K=self.opt.K)
+
+            if self.opt.clip_encoder:
+                with torch.no_grad():
+                    dets_process=copy.deepcopy(dets)
+                    dets_process = dets_process.reshape((dets.shape[0] * dets.shape[1], dets.shape[2]))
+                    dets_process_valid=make_detections_valid(self.opt.output_res,dets_process)
+                    model_embedding = self.embedder(output['clip'], dets_process)
+
+                    dets = dets.reshape((dets.shape[0] * dets.shape[1], dets.shape[2]))
+                    dets=torch.hstack((dets,model_embedding))
+                    dets = dets.reshape((hm.shape[0] , self.opt.clip_topk,-1))
 
         if return_time:
             return output, dets, forward_time
