@@ -21,9 +21,7 @@ class CLIPModel(nn.Module):
         dets = dets.reshape((batch["input"].shape[0] , self.opt.clip_topk, dets.shape[1]))
         clip_encodings = torch.zeros((dets.shape[0],dets.shape[1], 512),device="cuda")
         for batch_index in range(dets.shape[0]):
-            image=batch["input"][batch_index,:,:,:]
-            transform = T.ToPILImage()
-            image = transform(image)
+            image=Image.open(batch["meta"]["img_path"][batch_index])
             image.show()
 
             for topk_index in range(dets.shape[1]):
