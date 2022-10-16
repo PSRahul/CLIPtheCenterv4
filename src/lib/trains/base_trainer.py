@@ -22,7 +22,7 @@ class ModelWithLoss(torch.nn.Module):
     self.clip_model=clip_model
     self.embedder=embedder
   
-  def forward(self, batch):
+  def forward(self, batch,epoch):
     outputs = self.model(batch['input'])
 
     outputs=outputs[0]
@@ -32,14 +32,18 @@ class ModelWithLoss(torch.nn.Module):
         dets = ctdet_decode(
           heat=hm, wh=outputs['wh'].detach(), reg=outputs['reg'].detach(),
           cat_spec_wh=self.opt.cat_spec_wh, K=self.opt.clip_topk)
+
         dets_numpy=dets.cpu().numpy()
         for i in range(dets.shape[0]):
           soft_nms(dets_numpy[i,:,:], Nt=0.5, method=2)
+        #print(dets)
         dets=torch.Tensor(dets_numpy)
+        #print(dets)
         dets = dets.reshape((dets.shape[0] * dets.shape[1], dets.shape[2]))
         dets[:, :4] *= self.opt.down_ratio
-        clip_embedding, dets = self.clip_model(batch, dets)
+        clip_embedding, dets = self.clip_model(batch, dets,epoch)
         dets[:, :4] /= self.opt.down_ratio
+        #print(dets)
       model_embedding = self.embedder(outputs['clip'], dets)
       outputs["model_embedding"]=model_embedding
       outputs["clip_embedding"]=clip_embedding
@@ -93,7 +97,7 @@ class BaseTrainer(object):
       for k in batch:
         if k != 'meta':
           batch[k] = batch[k].to(device=opt.device, non_blocking=True)    
-      output, loss, loss_stats = model_with_loss(batch)
+      output, loss, loss_stats = model_with_loss(batch,epoch)
 
 
       loss = loss.mean()

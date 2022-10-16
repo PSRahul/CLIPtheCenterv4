@@ -161,7 +161,7 @@ class COCO(data.Dataset):
     self.images = self.coco.getImgIds()
     self.num_samples = len(self.images)
     self.num_classes = len(self.coco.cats)
-
+    assert (self.num_classes==opt.num_classes)
     print('Loaded {} {} samples'.format(split, self.num_samples))
 
     self.class_name = [

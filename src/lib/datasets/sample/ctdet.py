@@ -72,6 +72,7 @@ class CTDetDataset(data.Dataset):
     inp = cv2.warpAffine(img, trans_input, 
                          (input_w, input_h),
                          flags=cv2.INTER_LINEAR)
+    inp_original=inp.copy()
     inp = (inp.astype(np.float32) / 255.)
     if self.split == 'train' and not self.opt.no_color_aug:
       color_aug(self._data_rng, inp, self._eig_val, self._eig_vec)
@@ -127,7 +128,7 @@ class CTDetDataset(data.Dataset):
                        ct[0] + w / 2, ct[1] + h / 2, 1, cls_id])
     
     ret = {'input': inp, 'hm': hm, 'reg_mask': reg_mask, 'ind': ind, 'wh': wh,
-           }
+           "inp_original":inp_original}
     if self.opt.dense_wh:
       hm_a = hm.max(axis=0, keepdims=True)
       dense_wh_mask = np.concatenate([hm_a, hm_a], axis=0)
@@ -141,6 +142,7 @@ class CTDetDataset(data.Dataset):
     if self.opt.debug > 0 or not self.split == 'train':
       gt_det = np.array(gt_det, dtype=np.float32) if len(gt_det) > 0 else \
                np.zeros((1, 6), dtype=np.float32)
-    meta = {'c': c, 's': s, 'gt_det': gt_det, 'img_id': img_id,"img_path":img_path}
-    ret['meta'] = meta
+      meta = {'c': c, 's': s, 'gt_det': gt_det, 'img_id': img_id,"img_path":img_path,
+            "inp_original":inp_original}
+      ret['meta'] = meta
     return ret
