@@ -1,4 +1,6 @@
-annFile = "/home/psrahul/MasterThesis/datasets/centernet/coco/PASCAL_15_5_1500/base_classes/test/coco/labels.json"
+import os
+annFile_root="/home/psrahul/MasterThesis/datasets/centernet/coco/PASCAL_15_5_1500/base_classes/train"
+annFile = os.path.join(annFile_root,"coco/labels.json")
 resFile = "/home/psrahul/MasterThesis/repo/Phase7/CenterCLIP_Outputs/exp/ctdet/PASCAL_15_5_1500_CA_clip_res_18_1510/results.json"
 clip_embedding_root= "/home/psrahul/MasterThesis/datasets/BBoxGroundtruths/PASCAL_15_5/train/"
 
@@ -6,7 +8,7 @@ clip_embedding_root= "/home/psrahul/MasterThesis/datasets/BBoxGroundtruths/PASCA
 import matplotlib.pyplot as plt
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
-from evaluation.eval_clip_utils import get_class_embeddings,proces_dataset_class
+from evaluation.eval_clip_with_original_clip_utils import get_class_embeddings,proces_dataset_class
 
 annType = ['segm','bbox','keypoints']
 annType = annType[1]      #specify type here
@@ -15,7 +17,7 @@ cocoGt=COCO(annFile)
 cocoDt=cocoGt.loadRes(resFile)
 
 gt_clip_embeddings,class_id_list,class_name_list=get_class_embeddings(clip_embedding_root=clip_embedding_root,dataset=cocoGt)
-cocoDt=proces_dataset_class(cocoDt,gt_clip_embeddings,class_id_list,class_name_list)
+cocoDt=proces_dataset_class(annFile_root,cocoDt,gt_clip_embeddings,class_id_list,class_name_list)
 
 class_name=[]
 class_id=[]
