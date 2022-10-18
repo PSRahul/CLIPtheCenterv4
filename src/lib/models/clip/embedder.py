@@ -14,7 +14,7 @@ class Embedder(nn.Module):
             "pytorch/vision:v0.10.0",
             "resnet18", weights=ResNet18_Weights.DEFAULT
         )
-        self.model.fc= nn.Linear(512,2048)
+        self.model.fc= nn.Flatten()
         """
         self.model = torch.hub.load(
             "pytorch/vision:v0.10.0",

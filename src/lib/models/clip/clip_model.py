@@ -12,7 +12,7 @@ class CLIPModel(nn.Module):
     def __init__(self, opt):
         super().__init__()
         self.opt =opt
-        self.clip_model =torch.hub.load('pytorch/vision:v0.10.0', 'resnet50', pretrained=True)
+        self.clip_model =torch.hub.load('pytorch/vision:v0.10.0', 'resnet34', pretrained=True)
         self.clip_model.fc = nn.Flatten()
         self.clip_preprocess = transforms.Compose([
                                         transforms.Resize(224),
@@ -27,7 +27,7 @@ class CLIPModel(nn.Module):
         dets=make_detections_valid(self.opt.output_res,dets)
 
         dets = dets.reshape((batch["input"].shape[0] , self.opt.clip_topk, dets.shape[1]))
-        clip_encodings = torch.zeros((dets.shape[0],dets.shape[1], 2048),device="cuda")
+        clip_encodings = torch.zeros((dets.shape[0],dets.shape[1], 512),device="cuda")
         for batch_index in range(dets.shape[0]):
             image=batch["input"][batch_index,:,:,:]
             transform = T.ToPILImage()
@@ -45,7 +45,7 @@ class CLIPModel(nn.Module):
 
                     clip_encodings[batch_index,topk_index,:] = image_clip_embedding
 
-        clip_encodings=clip_encodings.reshape((batch["input"].shape[0] * self.opt.clip_topk,2048))
+        clip_encodings=clip_encodings.reshape((batch["input"].shape[0] * self.opt.clip_topk,512))
         clip_encodings /= clip_encodings.norm(dim=-1, keepdim=True)
 
         dets = dets.reshape((dets.shape[0]*dets.shape[1], dets.shape[2]))
