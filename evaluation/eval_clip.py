@@ -1,4 +1,4 @@
-annFile = "/home/psrahul/MasterThesis/datasets/centernet/coco/PASCAL_15_5_1500/base_classes/test/coco/labels.json"
+annFile = "/home/psrahul/MasterThesis/datasets/centernet/coco/PASCAL_15_5_1500/novel_classes/test/coco/labels.json"
 resFile = "/home/psrahul/MasterThesis/repo/Phase7/CenterCLIP_Outputs/exp/ctdet/PASCAL_15_5_1500_CA_clip_res_18_1510/results.json"
 clip_embedding_root= "/home/psrahul/MasterThesis/datasets/BBoxGroundtruths/PASCAL_15_5/train/"
 
@@ -19,9 +19,19 @@ cocoDt=proces_dataset_class(cocoDt,gt_clip_embeddings,class_id_list,class_name_l
 
 class_name=[]
 class_id=[]
+
+print("Classes : No classes")
+cocoEval = COCOeval(cocoGt, cocoDt, annType)
+#cocoEval.params.iouThrs = [0.5]
+cocoEval.params.useCats = 0
+cocoEval.evaluate()
+cocoEval.accumulate()
+cocoEval.summarize()
+
+
 print("Classes : All classes")
 cocoEval = COCOeval(cocoGt, cocoDt, annType)
-cocoEval.params.iouThrs = [0.5]
+#cocoEval.params.iouThrs = [0.5]
 cocoEval.evaluate()
 cocoEval.accumulate()
 cocoEval.summarize()
@@ -35,7 +45,7 @@ for i,cat_id in enumerate(class_id,0):
 
     cocoEval = COCOeval(cocoGt, cocoDt, annType)
     cocoEval.params.catIds=cat_id
-    cocoEval.params.iouThrs = [0.5]
+    #cocoEval.params.iouThrs = [0.5]
 
     cocoEval.evaluate()
     cocoEval.accumulate()
