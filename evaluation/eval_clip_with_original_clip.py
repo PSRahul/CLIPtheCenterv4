@@ -1,8 +1,8 @@
 import os
 annFile_root="/home/psrahul/MasterThesis/datasets/centernet/coco/PASCAL_15_5_1500/novel_classes/test"
 annFile = os.path.join(annFile_root,"coco/labels.json")
-resFile = "/home/psrahul/MasterThesis/Experiments/PASCAL_15_5_1500_CA_clip_res_18_1510/7.json"
-clip_embedding_root= "/home/psrahul/MasterThesis/datasets/BBoxGroundtruths/PASCAL_15_5/train/"
+resFile = "/home/psrahul/MasterThesis/Experiments/PASCAL_15_5_1500_CA_res18_embedder_res_34_1810/14.json"
+clip_embedding_root= "/home/psrahul/MasterThesis/datasets/BBoxGroundtruths_ResNet/PASCAL_15_5/train/"
 
 
 import matplotlib.pyplot as plt

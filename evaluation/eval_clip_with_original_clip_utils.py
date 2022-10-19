@@ -6,7 +6,8 @@ import torch
 import clip
 from PIL import Image
 from multiprocessing import Pool
-
+from torchvision import transforms
+import torch.nn as nn
 
 def generate_clip_embedding(clip_embedding_root,class_id_list,class_name_list):
     clip_embeddings = np.zeros((len(class_id_list), 512))
@@ -37,8 +38,15 @@ def assign_classes(clip_encodings, predictions):
     return top_labels
 
 def proces_dataset_class(annFile_root,dataset,gt_clip_embedding,class_id_list,class_name_list):
-    clip_model, clip_preprocess = clip.load("ViT-B/16", device="cuda")
-    clip_model = clip_model.cuda().eval()
+    clip_model = torch.hub.load('pytorch/vision:v0.10.0', 'resnet34', pretrained=True)
+    clip_model=clip_model.cuda()
+    clip_model.fc = nn.Flatten()
+    clip_preprocess = transforms.Compose([
+        transforms.Resize(224),
+        # transforms.CenterCrop(224),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ])
 
     for ann_index in tqdm(dataset.anns):
         ann=dataset.anns[ann_index]
@@ -54,7 +62,7 @@ def proces_dataset_class(annFile_root,dataset,gt_clip_embedding,class_id_list,cl
         image_cropped = image.crop((left, upper, right, lower))
         #image_cropped.show()
         image_cropped_clip = clip_preprocess(image_cropped).unsqueeze(0)
-        image_clip_embedding = clip_model.encode_image(image_cropped_clip.cuda())
+        image_clip_embedding = clip_model(image_cropped_clip.cuda())
         predicted_clip_encoding=image_clip_embedding.detach()
         top_labels=assign_classes(gt_clip_embedding,predicted_clip_encoding)
         dataset.anns[ann_index]["category_id"]=class_id_list[top_labels]
