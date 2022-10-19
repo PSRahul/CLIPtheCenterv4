@@ -58,6 +58,14 @@ def proces_dataset_class(dataset,gt_clip_embedding,class_id_list,class_name_list
         dataset.anns[ann_index]["category_id"]=class_id_list[top_labels]
     return dataset
 
+def proces_dataset_class(dataset,gt_clip_embedding,class_id_list,class_name_list):
+    print()
+    for ann_index in dataset.anns:
+        ann=dataset.anns[ann_index]
+        predicted_clip_encoding=ann["clip_encoding"]
+        top_labels=assign_classes(gt_clip_embedding,predicted_clip_encoding)
+        dataset.anns[ann_index]["category_id"]=class_id_list[top_labels]
+    return dataset
 
 
 def get_groundtruths(dataset, is_gt=False):
@@ -131,3 +139,15 @@ def visualise_bbox(annFile_root,dataset, id, gt=None, pred=None, draw_gt=True, d
     #plt.show()
     os.makedirs(os.path.join(checkpoint_dir,"images"), exist_ok=True)
     plt.savefig(os.path.join(checkpoint_dir,"images",str(id)+".png"))
+
+def filter_dataset_score(dataset,score_threshold):
+    print()
+    ann_ids=dataset.getAnnIds()
+    for ann_index in ann_ids:
+        ann=dataset.anns[ann_index]
+        img = dataset.loadImgs(ann["image_id"])
+
+        if(ann["score"]<score_threshold):
+            del dataset.anns[ann_index]
+
+    return dataset

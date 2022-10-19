@@ -8,7 +8,7 @@ score_threshold= 0.5
 import matplotlib.pyplot as plt
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
-from evaluation.eval_clip_utils import get_class_embeddings,proces_dataset_class,get_groundtruths,visualise_bbox
+from evaluation.eval_clip_utils import get_class_embeddings,proces_dataset_class,get_groundtruths,visualise_bbox,filter_dataset_score
 
 annType = ['segm','bbox','keypoints']
 annType = annType[1]      #specify type here
@@ -16,8 +16,10 @@ annType = annType[1]      #specify type here
 cocoGt=COCO(annFile)
 cocoDt=cocoGt.loadRes(resFile)
 
+#cocoDt=filter_dataset_score(cocoDt,score_threshold)
 gt_clip_embeddings,class_id_list,class_name_list=get_class_embeddings(clip_embedding_root=clip_embedding_root,dataset=cocoGt)
 cocoDt=proces_dataset_class(cocoDt,gt_clip_embeddings,class_id_list,class_name_list)
+
 
 class_name=[]
 class_id=[]
@@ -26,6 +28,7 @@ groundtruth_matrix=get_groundtruths(dataset=cocoGt,is_gt=True)
 detection_matrix=get_groundtruths(dataset=cocoDt)
 
 detection_matrix=detection_matrix[detection_matrix[:,5]>score_threshold]
+
 for index in cocoGt.getImgIds():
     visualise_bbox(
         annFile_root=annFile_root,dataset=cocoGt, id=index,
@@ -34,6 +37,7 @@ for index in cocoGt.getImgIds():
                draw_gt=True,
                draw_pred=True,
                checkpoint_dir="/home/psrahul/MasterThesis/Experiments/test/")
+
 
 print("Classes : No classes")
 cocoEval = COCOeval(cocoGt, cocoDt, annType)
