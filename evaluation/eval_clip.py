@@ -6,7 +6,7 @@ clip_embedding_root= "/home/psrahul/MasterThesis/datasets/BBoxGroundtruths/PASCA
 import matplotlib.pyplot as plt
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
-from evaluation.eval_clip_utils import get_class_embeddings,proces_dataset_class
+from evaluation.eval_clip_utils import get_class_embeddings,proces_dataset_class,get_groundtruths,visualise_bbox
 
 annType = ['segm','bbox','keypoints']
 annType = annType[1]      #specify type here
@@ -19,6 +19,16 @@ cocoDt=proces_dataset_class(cocoDt,gt_clip_embeddings,class_id_list,class_name_l
 
 class_name=[]
 class_id=[]
+
+groundtruth_matrix=get_groundtruths(dataset=cocoGt)
+detection_matrix=get_groundtruths(dataset=cocoDt)
+visualise_bbox(cfg=cfg, dataset=dataset, id=id,
+               gt=gt,
+               pred=prediction_with_nms_resized,
+               draw_gt=True,
+               draw_pred=True,
+               resize_image_to_output_shape=False,
+               checkpoint_dir=checkpoint_dir)
 
 print("Classes : No classes")
 cocoEval = COCOeval(cocoGt, cocoDt, annType)
