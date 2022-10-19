@@ -105,7 +105,7 @@ def visualise_bbox(annFile_root,dataset, id, gt=None, pred=None, draw_gt=True, d
     img = dataset.loadImgs(id)[0]
     img = img["file_name"]
     img = os.path.join(annFile_root, "coco", "data", img)
-    print(img)
+    #print(img)
     img = Image.open(img)
     image = np.asarray(img)
 
@@ -135,10 +135,12 @@ def visualise_bbox(annFile_root,dataset, id, gt=None, pred=None, draw_gt=True, d
                 facecolor='none')
             ax.add_patch(rect)
     #plt.show()
-    print(id," | Number of Predictions | ", predictions_image.shape[0]," | Number of GroundTruth Objects | ", gt_image.shape[0])
+    #print(id," | Number of Predictions | ", predictions_image.shape[0]," | Number of GroundTruth Objects | ", gt_image.shape[0])
     #plt.show()
-    os.makedirs(os.path.join(checkpoint_dir,"images"), exist_ok=True)
-    plt.savefig(os.path.join(checkpoint_dir,"images",str(id)+".png"))
+    os.makedirs(os.path.join(checkpoint_dir), exist_ok=True)
+    plt.axis('off')
+    plt.savefig(os.path.join(checkpoint_dir,str(id)+".png"),bbox_inches='tight')
+    plt.close("all")
 
 def filter_dataset_score(dataset,score_threshold):
     print()
