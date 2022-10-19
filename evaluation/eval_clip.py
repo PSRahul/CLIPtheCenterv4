@@ -1,7 +1,9 @@
-annFile = "/home/psrahul/MasterThesis/datasets/centernet/coco/PASCAL_15_5_1500/novel_classes/test/coco/labels.json"
-resFile = "/home/psrahul/MasterThesis/repo/Phase7/CenterCLIP_Outputs/exp/ctdet/PASCAL_15_5_1500_CA_clip_res_18_1510/results.json"
+import os
+annFile_root="/home/psrahul/MasterThesis/datasets/centernet/coco/PASCAL_15_5_1500/base_classes/train"
+annFile = os.path.join(annFile_root,"coco/labels.json")
+resFile = "/home/psrahul/MasterThesis/Experiments/PASCAL_15_5_1500_CA_clip_res_18_1510/2.json"
 clip_embedding_root= "/home/psrahul/MasterThesis/datasets/BBoxGroundtruths/PASCAL_15_5/train/"
-
+score_threshold= 0.5
 
 import matplotlib.pyplot as plt
 from pycocotools.coco import COCO
@@ -20,15 +22,18 @@ cocoDt=proces_dataset_class(cocoDt,gt_clip_embeddings,class_id_list,class_name_l
 class_name=[]
 class_id=[]
 
-groundtruth_matrix=get_groundtruths(dataset=cocoGt)
+groundtruth_matrix=get_groundtruths(dataset=cocoGt,is_gt=True)
 detection_matrix=get_groundtruths(dataset=cocoDt)
-visualise_bbox(cfg=cfg, dataset=dataset, id=id,
-               gt=gt,
-               pred=prediction_with_nms_resized,
+
+detection_matrix=detection_matrix[detection_matrix[:,5]>score_threshold]
+for index in cocoGt.getImgIds():
+    visualise_bbox(
+        annFile_root=annFile_root,dataset=cocoGt, id=index,
+               gt=groundtruth_matrix,
+               pred=detection_matrix,
                draw_gt=True,
                draw_pred=True,
-               resize_image_to_output_shape=False,
-               checkpoint_dir=checkpoint_dir)
+               checkpoint_dir="/home/psrahul/MasterThesis/Experiments/test/")
 
 print("Classes : No classes")
 cocoEval = COCOeval(cocoGt, cocoDt, annType)
