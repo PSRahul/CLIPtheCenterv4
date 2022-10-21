@@ -24,6 +24,10 @@ for i in range(len(class_split_list)):
 
 
         fig, (ax1, ax2)=plt.subplots(1, 2)
+
+        #fig.set_size_inches(19.20,10.80)
+        #fig.set_size_inches(3.60, 3.6)
+        plt.subplots_adjust(wspace=0, hspace=0)
         ax1.imshow(centernet_img)
         ax1.axis('off')
         ax2.imshow(clipthecenter_img)
@@ -31,5 +35,5 @@ for i in range(len(class_split_list)):
         os.makedirs(os.path.join("/home/psrahul/MasterThesis/Experiments/sample_images/combined_results/",class_split,split), exist_ok=True)
         plt.axis('off')
         plt.savefig(os.path.join(os.path.join("/home/psrahul/MasterThesis/Experiments/sample_images/combined_results/",class_split,split),
-                                 str(image_name) ), bbox_inches='tight')
+                                 str(image_name) ), bbox_inches='tight', dpi=600)
         plt.close("all")
